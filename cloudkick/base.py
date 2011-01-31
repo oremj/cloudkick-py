@@ -89,6 +89,9 @@ class Connection(object):
         return self.__oauth_secret
 
     def _request(self, url, parameters=None, method='GET'):
+        if not parameters:
+            parameters = None
+
         signature_method = oauth.OAuthSignatureMethod_HMAC_SHA1()
         consumer = oauth.OAuthConsumer(self.oauth_key, self.oauth_secret)
         url = 'https://' + self.API_SERVER + '/' + self.API_VERSION + '/' + url
@@ -109,17 +112,44 @@ class Connection(object):
         except ValueError:
             return r
 
-    def nodes(self, query="*"):
-        nodes = self._request_json("nodes", {'query': query})
-        return nodes
+    def change_logs(self, startdate=None, enddate=None):
+        params = {}
+        if startdate:
+            params['startdate'] = startdate
+        if enddate:
+            params['enddate'] = enddate
+
+        return self._request_json("change_logs", params)
 
     def checks(self):
-        checks = self._request_json("checks")
-        return checks
+        return self._request_json("checks")
+
+    def interesting_metrics(self):
+        return self._request_json("interesting_metrics")
 
     def monitors(self):
-        monitors = self._request_json("monitors")
-        return monitors
+        return self._request_json("monitors")
+
+    def nodes(self, query="*"):
+        return self._request_json("nodes", {'query': query})
+
+    def status_nodes(self, **kwargs):
+        """Parameters:
+            overall_check_statuses - Filter only checks with warning, error, or recovery messages
+            check_id - Filter the statuses based on the check id
+            monitor_id - Filter based on the monitor id
+            query - Filter based on a query string
+            include_metrics - Include the metrics with the response 
+        """
+        valid_params = ['overall_check_statuses', 'check_id',
+                        'monitor_id', 'query', 'include_metrics']
+        params = dict([(k,v) for k,v in kwargs.iteritems()
+                             if k in valid_params])
+
+        return self._request_json("status/nodes", params)
+
+    def tags(self):
+        return self._request_json("tags")
 
 
 if __name__ == "__main__":
