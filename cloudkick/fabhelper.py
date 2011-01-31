@@ -17,8 +17,9 @@
 __all__ = ["hosts", "roledefs", "load"]
 
 import sys
-from cloudkick.base import Connection
 from collections import defaultdict
+
+from cloudkick.base import Connection
 
 _CACHED_NODES = None
 

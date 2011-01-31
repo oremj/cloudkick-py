@@ -35,7 +35,7 @@ class Connection(object):
   """
 
   API_SERVER = "api.cloudkick.com"
-  API_VERSION = "1.0"
+  API_VERSION = "2.0"
 
   def __init__(self, config_path = None, oauth_key = None, oauth_secret = None):
     self.__oauth_key = oauth_key or None
@@ -109,7 +109,7 @@ class Connection(object):
     	return r
 
   def nodes(self, query = "*"):
-    nodes = self._request_json("query/nodes", {'query': query})
+    nodes = self._request_json("nodes", {'query': query})
     return nodes
 
   def checks(self, node):
@@ -139,8 +139,9 @@ if __name__ == "__main__":
   from datetime import datetime, timedelta
   c = Connection()
   nodes = c.nodes()
-  nid = nodes[6]['id']
-  checks =  c.checks(nid)
-  check = checks[0][nid][0]
-  now = datetime.now()
-  pprint(check)
+  pprint(nodes)
+  #nid = nodes[6]['id']
+  #checks =  c.checks(nid)
+  #check = checks[0][nid][0]
+  #now = datetime.now()
+  #pprint(check)
