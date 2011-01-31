@@ -24,33 +24,34 @@ from cloudkick.base import Connection
 _CACHED_NODES = None
 
 def _get_data():
-  global _CACHED_NODES 
-  if _CACHED_NODES is None:
-    c = Connection()
-    _CACHED_NODES = c.nodes()
-  return _CACHED_NODES
+    global _CACHED_NODES 
+    if _CACHED_NODES is None:
+        c = Connection()
+        _CACHED_NODES = c.nodes()
+    return _CACHED_NODES
+
 
 def hosts():
-  # TODO: need generic DNS (?)
-  d = _get_data()
-  return [node.get("ipaddress") for node in _get_data()]
+    # TODO: need generic DNS (?)
+    d = _get_data()
+    return [node.get("ipaddress") for node in _get_data()]
+
 
 def roledefs():
-    rd = defaultdict(list)
-    for node in _get_data():
-      for t in node.get("tags"):
-        rd[t].append(node.get("ipaddress"))
-    return rd
+        rd = defaultdict(list)
+        for node in _get_data():
+            for t in node.get("tags"):
+                rd[t].append(node.get("ipaddress"))
+        return rd
 
 
 def load(x = None):
-  from fabric.api import env
-  try:
-    env.hosts = hosts()
-    env.roledefs = roledefs()
-  except IOError, e:
-    # Don't print a huge stack trace if there's a problem. Most likely cloudkick.conf isn't in the path.
-    print e
-    sys.exit()
-  return x
-
+    from fabric.api import env
+    try:
+        env.hosts = hosts()
+        env.roledefs = roledefs()
+    except IOError, e:
+        # Don't print a huge stack trace if there's a problem. Most likely cloudkick.conf isn't in the path.
+        print e
+        sys.exit()
+    return x
