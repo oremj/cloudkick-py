@@ -88,18 +88,25 @@ class Connection(object):
             self._read_config()
         return self.__oauth_secret
 
+    def _filter_params(self, params):
+        """Filter out any null parameters"""
+        return dict((k, v) for k, v in params.iteritems() if v is not None)
+
     def _request(self, url, parameters=None, method='GET'):
         if not parameters:
             parameters = None
+        else:
+            parameters = self._filter_params(parameters)
 
         signature_method = oauth.OAuthSignatureMethod_HMAC_SHA1()
         consumer = oauth.OAuthConsumer(self.oauth_key, self.oauth_secret)
-        url = 'https://' + self.API_SERVER + '/' + self.API_VERSION + '/' + url
+        url = 'https://%s/%s/%s' % (self.API_SERVER, self.API_VERSION, url)
         oauth_request = oauth.OAuthRequest.from_consumer_and_token(consumer,
                                                                    http_url=url,
                                                                    parameters=parameters)
         oauth_request.sign_request(signature_method, consumer, None)
         url = oauth_request.to_url()
+        print url
         f = urllib.urlopen(url)
         s = f.read()
         return s
@@ -112,17 +119,25 @@ class Connection(object):
         except ValueError:
             return r
 
-    def change_logs(self, startdate=None, enddate=None):
-        params = {}
-        if startdate:
-            params['startdate'] = startdate
-        if enddate:
-            params['enddate'] = enddate
+    def addresses(self):
+        return self._request_json("addresses")
 
+    def address_types(self):
+        return self._request_json("address_types")
+
+    def change_logs(self, startdate=None, enddate=None):
+        params = {
+            'startdate': startdate,
+            'enddate': enddate,
+        }
         return self._request_json("change_logs", params)
 
-    def checks(self):
-        return self._request_json("checks")
+    def checks(self, monitor_id=None, node_ids=None):
+        params = {
+            'monitor_id': monitor_id,
+            'node_ids': ",".join(node_ids),
+        }
+        return self._request_json("checks", params)
 
     def interesting_metrics(self):
         return self._request_json("interesting_metrics")
@@ -132,6 +147,12 @@ class Connection(object):
 
     def nodes(self, query="*"):
         return self._request_json("nodes", {'query': query})
+
+    def providers(self):
+        return self._request_json("providers")
+
+    def provider_types(self):
+        return self._request_json("provider_types")
 
     def status_nodes(self, **kwargs):
         """Parameters:
@@ -157,8 +178,8 @@ if __name__ == "__main__":
     c = Connection()
     nodes = c.nodes()
     pprint(nodes)
-    nid = nodes['items'][6]['id']
-    checks = c.checks()
+    nids = [n['id'] for n in nodes['items']]
+    checks = c.checks(node_ids=nids)
     pprint(checks)
     #check = checks[0][nid][0]
     #now = datetime.now()
