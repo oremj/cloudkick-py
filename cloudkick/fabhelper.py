@@ -27,7 +27,7 @@ def _get_data():
     global _CACHED_NODES 
     if _CACHED_NODES is None:
         c = Connection()
-        _CACHED_NODES = c.nodes()
+        _CACHED_NODES = c.nodes.list()
     return _CACHED_NODES
 
 

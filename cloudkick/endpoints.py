@@ -24,7 +24,7 @@ class _ApiEndpoint(object):
 
 
 class Addresses(_ApiEndpoint):
-    
+
     def list(self):
         """Return a list of addresses on your account"""
         return self.conn._request_json("addresses")
@@ -60,7 +60,7 @@ class Checks(_ApiEndpoint):
 
 
 class InterestingMetrics(_ApiEndpoint):
-    
+
     def list(self):
         """Return a list of interesting metrics on your account"""
         return self.conn._request_json("interesting_metrics")
@@ -75,7 +75,7 @@ class Monitors(_ApiEndpoint):
 
 
 class Nodes(_ApiEndpoint):
-    
+
     def list(self, query="*"):
         """Returns a list of nodes for your account"""
         return self.conn._request_json("nodes", {'query': query})
@@ -96,7 +96,7 @@ class ProviderTypes(_ApiEndpoint):
 
 
 class StatusNodes(_ApiEndpoint):
-    
+
     def list(self, **kwargs):
         """Returns the status of a set of checks, filtered based on statuses
 
@@ -106,19 +106,19 @@ class StatusNodes(_ApiEndpoint):
             check_id -- Filter the statuses based on the check id
             monitor_id -- Filter based on the monitor id
             query -- Filter based on a query string
-            include_metrics -- Include the metrics with the response 
+            include_metrics -- Include the metrics with the response
 
         """
         valid_params = ['overall_check_statuses', 'check_id',
                         'monitor_id', 'query', 'include_metrics']
-        params = dict([(k,v) for k,v in kwargs.iteritems()
-                             if k in valid_params])
+        params = dict([(k,v) for k, v in kwargs.iteritems()
+                                if k in valid_params])
 
         return self.conn._request_json("status/nodes", params)
 
 
 class Tags(_ApiEndpoint):
-    
+
     def list(self):
         "Return the list of tags preset on the account"""
         return self.conn._request_json("tags")

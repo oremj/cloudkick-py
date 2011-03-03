@@ -48,10 +48,10 @@ def gchart(conn, node, check, metric, start=datetime.now()-timedelta(days=1), en
 
 if __name__ == "__main__":
   c = Connection()
-  nodes = c.nodes()
+  nodes = c.nodes.list()
   node = nodes[20]
   print node
-  checks = c.checks(node['id'])
+  checks = c.checks.list(node['id'])
   print checks
   check = checks[0][node['id']][0]
   print check

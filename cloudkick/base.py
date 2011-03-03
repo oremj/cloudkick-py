@@ -25,6 +25,8 @@ try:
 except ImportError:
     import simplejson as json
 
+import endpoints
+
 
 class Connection(object):
     """
@@ -41,7 +43,8 @@ class Connection(object):
         self.__oauth_key = oauth_key or None
         self.__oauth_secret = oauth_secret or None
         if config_path is None:
-            config_path = [os.path.join(os.path.expanduser('~'), ".cloudkick.conf"),
+            config_path = [os.path.join(os.path.expanduser('~'),
+                                             ".cloudkick.conf"),
                            "/etc/cloudkick.conf"]
         if not isinstance(config_path, list):
             config_path = [config_path]
@@ -102,11 +105,10 @@ class Connection(object):
         consumer = oauth.OAuthConsumer(self.oauth_key, self.oauth_secret)
         url = 'https://%s/%s/%s' % (self.API_SERVER, self.API_VERSION, url)
         oauth_request = oauth.OAuthRequest.from_consumer_and_token(consumer,
-                                                                   http_url=url,
-                                                                   parameters=parameters)
+                                                         http_url=url,
+                                                         parameters=parameters)
         oauth_request.sign_request(signature_method, consumer, None)
         url = oauth_request.to_url()
-        print url
         f = urllib.urlopen(url)
         s = f.read()
         return s
@@ -119,14 +121,58 @@ class Connection(object):
         except ValueError:
             return r
 
+    @property
+    def addresses(self):
+        return endpoints.Addresses(self)
+
+    @property
+    def address_types(self):
+        return endpoints.AddressTypes(self)
+
+    @property
+    def changelogs(self):
+        return endpoints.ChangeLogs(self)
+
+    @property
+    def checks(self):
+        return endpoints.Checks(self)
+
+    @property
+    def interesting_metrics(self):
+        return endpoints.InterestingMetrics(self)
+
+    @property
+    def monitors(self):
+        return endpoints.Monitors(self)
+
+    @property
+    def nodes(self):
+        return endpoints.Nodes(self)
+
+    @property
+    def providers(self):
+        return endpoints.Providers(self)
+
+    @property
+    def provider_types(self):
+        return endpoints.ProviderTypes(self)
+
+    @property
+    def status_nodes(self):
+        return endpoints.StatusNodes(self)
+
+    @property
+    def tags(self):
+        return endpoints.Tags(self)
+
 
 if __name__ == "__main__":
     from pprint import pprint
     c = Connection()
-    nodes = c.nodes()
+    nodes = c.nodes.list()
     pprint(nodes)
     nids = [n['id'] for n in nodes['items']]
-    checks = c.checks(node_ids=nids)
+    checks = c.checks.list(node_ids=nids)
     pprint(checks)
     #check = checks[0][nid][0]
     #now = datetime.now()
