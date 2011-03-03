@@ -14,6 +14,10 @@
 # limitations under the License.
 
 
+class ApiEndPointException(Exception):
+    """Base API exception"""
+    pass
+
 class _ApiEndpoint(object):
     """
     Base class for api endpoints
@@ -77,6 +81,44 @@ class Monitors(_ApiEndpoint):
 class Nodes(_ApiEndpoint):
     """https://support.cloudkick.com/API/2.0/Nodes"""
 
+    def _tag(self, op, node_id, tag_id, tag_name, do_create):
+        if tag_id is None and tag_name is None:
+            raise ApiEndPointException("You must pass either a tag_id or a tag_name")
+
+        params = {'id': tag_id,
+                  'name': tag_name,
+                  'do_create': do_create}
+
+        return self._conn._request_json("nodes/%s/%s" % (node_id, op),
+                                            params, 'POST')
+        
+
+    def add_tag(self, node_id, tag_id=None, tag_name=None, do_create=False):
+        """Apply tag to a node
+
+        Keyword arguments
+            node_id - id of node to add tag
+            tag_id - apply the tag with tag_id to the current node
+            tag_name - apply the named tag to the current node
+            do_create - create the tag if it doesn't exist (optional)
+
+        """
+
+        return self._tag('add_tag', node_id, tag_id, tag_name, do_create)
+
+    def remove_tag(self, node_id, tag_id=None, tag_name=None, do_create=False):
+        """Remove a tag from a node
+
+        Keyword arguments
+            node_id - id of node to add tag
+            tag_id - apply the tag with tag_id to the current node
+            tag_name - apply the named tag to the current node
+            do_create - create the tag if it doesn't exist (optional)
+
+        """
+
+        return self._tag('remove_tag', node_id, tag_id, tag_name, do_create)
+
     def create(self, name, ip_address, details):
         """Creates a node on your account with a unique name
         
@@ -100,18 +142,19 @@ class Nodes(_ApiEndpoint):
         return self._conn._request_json("nodes", {'query': query})
 
     def update(self, node_id, name, ip_address,
-                 details, ssh_user=None, ssh_port=None)
+                 details, ssh_user=None, ssh_port=None):
         """Updates node on your account
         
         Keyword arguments
+            node_id - id of node to update
             name - Name of the machine. This has to be unique over nodes 
                    that are online
             ip_address - The public ip address of the node
             details - This is a dictionary of nested key value pairs.
                       These properties get indexed and are later to be used 
                       in the query language. 
-            ssh_user - Username for ssh-ing onto server via webterm
-            ssh_port - ssh port use for webterm
+            ssh_user - Username for ssh-ing onto server via webterm (optional)
+            ssh_port - ssh port use for webterm (optional)
 
         """
 
