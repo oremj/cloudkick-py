@@ -26,19 +26,22 @@ class _ApiEndpoint(object):
     def __init__(self, conn):
         self._conn = conn
 
+    def _req_json(self, *args, **kwargs):
+        return self._conn._request_json(*args, **kwargs)
+
 
 class Addresses(_ApiEndpoint):
 
     def list(self):
         """Return a list of addresses on your account"""
-        return self._conn._request_json("addresses")
+        return self._req_json("addresses")
 
 
 class AddressTypes(_ApiEndpoint):
 
     def list(self):
         """Return a list of the types of addresses available to your account"""
-        return self._conn._request_json("address_types")
+        return self._req_json("address_types")
 
 
 class ChangeLogs(_ApiEndpoint):
@@ -49,7 +52,7 @@ class ChangeLogs(_ApiEndpoint):
             'startdate': startdate,
             'enddate': enddate,
         }
-        return self._conn._request_json("change_logs", params)
+        return self._req_json("change_logs", params)
 
 
 class Checks(_ApiEndpoint):
@@ -60,22 +63,36 @@ class Checks(_ApiEndpoint):
             'monitor_id': monitor_id,
             'node_ids': ",".join(node_ids),
         }
-        return self._conn._request_json("checks", params)
+        return self._req_json("checks", params)
 
 
 class InterestingMetrics(_ApiEndpoint):
 
     def list(self):
         """Return a list of interesting metrics on your account"""
-        return self._conn._request_json("interesting_metrics")
+        return self._req_json("interesting_metrics")
 
 
 class Monitors(_ApiEndpoint):
+    """https://support.cloudkick.com/API/2.0/Monitors"""
+
+    def create(self, name, query, notes=None):
+        params = {'name': name,
+                  'query': query,
+                  'notes': notes}
+
+        return self._req_json("monitors", params, 'POST')
+
+    def disable(self, m_id):
+        return self._req_json("monitors/%s/disable" % m_id, None, 'POST')
+
+    def enable(self, m_id):
+        return self._req_json("monitors/%s/enable" % m_id, None, 'POST')
 
     def list(self):
         """Returns the total list of all the monitors created in the UI
            as well as the API"""
-        return self._conn._request_json("monitors")
+        return self._req_json("monitors")
 
 
 class Nodes(_ApiEndpoint):
@@ -89,8 +106,7 @@ class Nodes(_ApiEndpoint):
                   'name': tag_name,
                   'do_create': do_create}
 
-        return self._conn._request_json("nodes/%s/%s" % (node_id, op),
-                                            params, 'POST')
+        return self._req_json("nodes/%s/%s" % (node_id, op), params, 'POST')
         
 
     def add_tag(self, node_id, tag_id=None, tag_name=None, do_create=False):
@@ -135,11 +151,11 @@ class Nodes(_ApiEndpoint):
                   'ip_address': ip_address,
                   'details': details}
 
-        return self._conn._request_json("nodes", params, 'POST')
+        return self._req_json("nodes", params, 'POST')
 
     def list(self, query="*"):
         """Returns a list of nodes for your account"""
-        return self._conn._request_json("nodes", {'query': query})
+        return self._req_json("nodes", {'query': query})
 
     def update(self, node_id, name, ip_address,
                  details, ssh_user=None, ssh_port=None):
@@ -164,21 +180,21 @@ class Nodes(_ApiEndpoint):
                   'ssh_user': ssh_user,
                   'ssh_port': ssh_port}
 
-        return self._conn._request_json("nodes/%s" % node_id, params, 'POST')
+        return self._req_json("nodes/%s" % node_id, params, 'POST')
 
 
 class Providers(_ApiEndpoint):
 
     def list(self):
         """Return a list of providers on your account"""
-        return self._conn._request_json("providers")
+        return self._req_json("providers")
 
 
 class ProviderTypes(_ApiEndpoint):
 
     def list(self):
         """Return list of types of providers available to your account"""
-        return self._conn._request_json("provider_types")
+        return self._req_json("provider_types")
 
 
 class StatusNodes(_ApiEndpoint):
@@ -200,11 +216,11 @@ class StatusNodes(_ApiEndpoint):
         params = dict([(k,v) for k, v in kwargs.iteritems()
                                 if k in valid_params])
 
-        return self._conn._request_json("status/nodes", params)
+        return self._req_json("status/nodes", params)
 
 
 class Tags(_ApiEndpoint):
 
     def list(self):
         "Return the list of tags preset on the account"""
-        return self._conn._request_json("tags")
+        return self._req_json("tags")
