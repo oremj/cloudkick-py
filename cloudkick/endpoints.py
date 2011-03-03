@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-class ApiEndpoint(object):
+class _ApiEndpoint(object):
     """
     Base class for api endpoints
     """
@@ -23,21 +23,21 @@ class ApiEndpoint(object):
         self.conn = conn
 
 
-class Addresses(ApiEndpoint):
+class Addresses(_ApiEndpoint):
     
     def list(self):
         """Return a list of addresses on your account"""
-        return self._request_json("addresses")
+        return self.conn._request_json("addresses")
 
 
-class AddressTypes(ApiEndpoint):
+class AddressTypes(_ApiEndpoint):
 
     def list(self):
         """Return a list of the types of addresses available to your account"""
-        return self._request_json("address_types")
+        return self.conn._request_json("address_types")
 
 
-class ChangeLogs(ApiEndpoint):
+class ChangeLogs(_ApiEndpoint):
 
     def list(self, startdate=None, enddate=None):
         """Returns a list of change logs in the system."""
@@ -45,10 +45,10 @@ class ChangeLogs(ApiEndpoint):
             'startdate': startdate,
             'enddate': enddate,
         }
-        return self._request_json("change_logs", params)
+        return self.conn._request_json("change_logs", params)
 
 
-class Checks(ApiEndpoint):
+class Checks(_ApiEndpoint):
 
     def list(self, monitor_id=None, node_ids=None):
         """Returns the total list of all the checks in the system"""
@@ -56,46 +56,46 @@ class Checks(ApiEndpoint):
             'monitor_id': monitor_id,
             'node_ids': ",".join(node_ids),
         }
-        return self._request_json("checks", params)
+        return self.conn._request_json("checks", params)
 
 
-class InterestingMetrics(ApiEndpoint):
+class InterestingMetrics(_ApiEndpoint):
     
     def list(self):
         """Return a list of interesting metrics on your account"""
-        return self._request_json("interesting_metrics")
+        return self.conn._request_json("interesting_metrics")
 
 
-class Monitors(ApiEndpoint):
+class Monitors(_ApiEndpoint):
 
     def list(self):
         """Returns the total list of all the monitors created in the UI
            as well as the API"""
-        return self._request_json("monitors")
+        return self.conn._request_json("monitors")
 
 
-class Nodes(ApiEndpoint):
+class Nodes(_ApiEndpoint):
     
     def list(self, query="*"):
         """Returns a list of nodes for your account"""
-        return self._request_json("nodes", {'query': query})
+        return self.conn._request_json("nodes", {'query': query})
 
 
-class Providers(ApiEndpoint):
+class Providers(_ApiEndpoint):
 
     def list(self):
         """Return a list of providers on your account"""
-        return self._request_json("providers")
+        return self.conn._request_json("providers")
 
 
-class ProviderTypes(ApiEndpoint):
+class ProviderTypes(_ApiEndpoint):
 
     def list(self):
         """Return list of types of providers available to your account"""
-        return self._request_json("provider_types")
+        return self.conn._request_json("provider_types")
 
 
-class StatusNodes(ApiEndpoint):
+class StatusNodes(_ApiEndpoint):
     
     def list(self, **kwargs):
         """Returns the status of a set of checks, filtered based on statuses
@@ -114,10 +114,10 @@ class StatusNodes(ApiEndpoint):
         params = dict([(k,v) for k,v in kwargs.iteritems()
                              if k in valid_params])
 
-        return self._request_json("status/nodes", params)
+        return self.conn._request_json("status/nodes", params)
 
 
-class Tags(ApiEndpoint):
+class Tags(_ApiEndpoint):
     
     def list(self):
         "Return the list of tags preset on the account"""
