@@ -21,9 +21,9 @@ import urllib
 from oauth import oauth
 
 try:
-  import json
+    import json
 except ImportError:
-  import simplejson as json
+    import simplejson as json
 
 
 class Connection(object):
@@ -120,12 +120,15 @@ class Connection(object):
             return r
 
     def addresses(self):
+        """Return a list of addresses on your account"""
         return self._request_json("addresses")
 
     def address_types(self):
+        """Return a list of the types of addresses available to your account"""
         return self._request_json("address_types")
 
     def change_logs(self, startdate=None, enddate=None):
+        """Returns a list of change logs in the system."""
         params = {
             'startdate': startdate,
             'enddate': enddate,
@@ -133,6 +136,7 @@ class Connection(object):
         return self._request_json("change_logs", params)
 
     def checks(self, monitor_id=None, node_ids=None):
+        """Returns the total list of all the checks in the system"""
         params = {
             'monitor_id': monitor_id,
             'node_ids': ",".join(node_ids),
@@ -140,27 +144,37 @@ class Connection(object):
         return self._request_json("checks", params)
 
     def interesting_metrics(self):
+        """Return a list of interesting metrics on your account"""
         return self._request_json("interesting_metrics")
 
     def monitors(self):
+        """Returns the total list of all the monitors created in the UI
+           as well as the API"""
         return self._request_json("monitors")
 
     def nodes(self, query="*"):
+        """Returns a list of nodes for your account"""
         return self._request_json("nodes", {'query': query})
 
     def providers(self):
+        """Return a list of providers on your account"""
         return self._request_json("providers")
 
     def provider_types(self):
+        """Return list of types of providers available to your account"""
         return self._request_json("provider_types")
 
     def status_nodes(self, **kwargs):
-        """Parameters:
-            overall_check_statuses - Filter only checks with warning, error, or recovery messages
-            check_id - Filter the statuses based on the check id
-            monitor_id - Filter based on the monitor id
-            query - Filter based on a query string
-            include_metrics - Include the metrics with the response 
+        """Returns the status of a set of checks, filtered based on statuses
+
+        Keywork arguments:
+            overall_check_statuses -- Filter only checks with warning,
+                                      error, or recovery messages
+            check_id -- Filter the statuses based on the check id
+            monitor_id -- Filter based on the monitor id
+            query -- Filter based on a query string
+            include_metrics -- Include the metrics with the response 
+
         """
         valid_params = ['overall_check_statuses', 'check_id',
                         'monitor_id', 'query', 'include_metrics']
@@ -170,6 +184,7 @@ class Connection(object):
         return self._request_json("status/nodes", params)
 
     def tags(self):
+        "Return the list of tags preset on the account"""
         return self._request_json("tags")
 
 
