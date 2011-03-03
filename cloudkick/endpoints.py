@@ -99,6 +99,30 @@ class Nodes(_ApiEndpoint):
         """Returns a list of nodes for your account"""
         return self._conn._request_json("nodes", {'query': query})
 
+    def update(self, node_id, name, ip_address,
+                 details, ssh_user=None, ssh_port=None)
+        """Updates node on your account
+        
+        Keyword arguments
+            name - Name of the machine. This has to be unique over nodes 
+                   that are online
+            ip_address - The public ip address of the node
+            details - This is a dictionary of nested key value pairs.
+                      These properties get indexed and are later to be used 
+                      in the query language. 
+            ssh_user - Username for ssh-ing onto server via webterm
+            ssh_port - ssh port use for webterm
+
+        """
+
+        params = {'name': name,
+                  'ip_address': ip_address,
+                  'details': details,
+                  'ssh_user': ssh_user,
+                  'ssh_port': ssh_port}
+
+        return self._conn._request_json("nodes/%s" % node_id, params, 'POST')
+
 
 class Providers(_ApiEndpoint):
 
