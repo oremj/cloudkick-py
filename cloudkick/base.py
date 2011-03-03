@@ -106,6 +106,7 @@ class Connection(object):
         url = 'https://%s/%s/%s' % (self.API_SERVER, self.API_VERSION, url)
         oauth_request = oauth.OAuthRequest.from_consumer_and_token(consumer,
                                                          http_url=url,
+                                                         http_method=method,
                                                          parameters=parameters)
         oauth_request.sign_request(signature_method, consumer, None)
         url = oauth_request.to_url()

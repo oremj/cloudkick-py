@@ -20,21 +20,21 @@ class _ApiEndpoint(object):
     """
 
     def __init__(self, conn):
-        self.conn = conn
+        self._conn = conn
 
 
 class Addresses(_ApiEndpoint):
 
     def list(self):
         """Return a list of addresses on your account"""
-        return self.conn._request_json("addresses")
+        return self._conn._request_json("addresses")
 
 
 class AddressTypes(_ApiEndpoint):
 
     def list(self):
         """Return a list of the types of addresses available to your account"""
-        return self.conn._request_json("address_types")
+        return self._conn._request_json("address_types")
 
 
 class ChangeLogs(_ApiEndpoint):
@@ -45,7 +45,7 @@ class ChangeLogs(_ApiEndpoint):
             'startdate': startdate,
             'enddate': enddate,
         }
-        return self.conn._request_json("change_logs", params)
+        return self._conn._request_json("change_logs", params)
 
 
 class Checks(_ApiEndpoint):
@@ -56,14 +56,14 @@ class Checks(_ApiEndpoint):
             'monitor_id': monitor_id,
             'node_ids': ",".join(node_ids),
         }
-        return self.conn._request_json("checks", params)
+        return self._conn._request_json("checks", params)
 
 
 class InterestingMetrics(_ApiEndpoint):
 
     def list(self):
         """Return a list of interesting metrics on your account"""
-        return self.conn._request_json("interesting_metrics")
+        return self._conn._request_json("interesting_metrics")
 
 
 class Monitors(_ApiEndpoint):
@@ -71,28 +71,47 @@ class Monitors(_ApiEndpoint):
     def list(self):
         """Returns the total list of all the monitors created in the UI
            as well as the API"""
-        return self.conn._request_json("monitors")
+        return self._conn._request_json("monitors")
 
 
 class Nodes(_ApiEndpoint):
+    """https://support.cloudkick.com/API/2.0/Nodes"""
+
+    def create(self, name, ip_address, details):
+        """Creates a node on your account with a unique name
+        
+        Keyword arguments
+            name - Name of the machine. This has to be unique over nodes 
+                   that are online
+            ip_address - The public ip address of the node
+            details - This is a dictionary of nested key value pairs.
+                      These properties get indexed and are later to be used 
+                      in the query language. 
+
+        """
+        params = {'name': name,
+                  'ip_address': ip_address,
+                  'details': details}
+
+        return self._conn._request_json("nodes", params, 'POST')
 
     def list(self, query="*"):
         """Returns a list of nodes for your account"""
-        return self.conn._request_json("nodes", {'query': query})
+        return self._conn._request_json("nodes", {'query': query})
 
 
 class Providers(_ApiEndpoint):
 
     def list(self):
         """Return a list of providers on your account"""
-        return self.conn._request_json("providers")
+        return self._conn._request_json("providers")
 
 
 class ProviderTypes(_ApiEndpoint):
 
     def list(self):
         """Return list of types of providers available to your account"""
-        return self.conn._request_json("provider_types")
+        return self._conn._request_json("provider_types")
 
 
 class StatusNodes(_ApiEndpoint):
@@ -100,7 +119,7 @@ class StatusNodes(_ApiEndpoint):
     def list(self, **kwargs):
         """Returns the status of a set of checks, filtered based on statuses
 
-        Keywork arguments:
+        Keyword arguments:
             overall_check_statuses -- Filter only checks with warning,
                                       error, or recovery messages
             check_id -- Filter the statuses based on the check id
@@ -114,11 +133,11 @@ class StatusNodes(_ApiEndpoint):
         params = dict([(k,v) for k, v in kwargs.iteritems()
                                 if k in valid_params])
 
-        return self.conn._request_json("status/nodes", params)
+        return self._conn._request_json("status/nodes", params)
 
 
 class Tags(_ApiEndpoint):
 
     def list(self):
         "Return the list of tags preset on the account"""
-        return self.conn._request_json("tags")
+        return self._conn._request_json("tags")
